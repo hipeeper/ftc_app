@@ -38,7 +38,12 @@ public class PushBotManual1 extends PushBotTelemetry
         // All via self-construction.
 
     } // PushBotManual1
+public void init ()
+{
+    super.init ();
+    m_hand_position(0.0);
 
+}
     //--------------------------------------------------------------------------
     //
     // loop
@@ -90,8 +95,8 @@ public class PushBotManual1 extends PushBotTelemetry
         // arm move from the back to the front (i.e. down).
         //
         float l_left_arm_power
-            = (float)scale_motor_power (gamepad1.right_trigger)
-            - (float)scale_motor_power (gamepad1.left_trigger);
+            = (float)scale_motor_power (gamepad2.right_trigger)
+            - (float)scale_motor_power (gamepad2.left_trigger);
         m_left_arm_power (l_left_arm_power);
 
         //----------------------------------------------------------------------
@@ -108,11 +113,10 @@ public class PushBotManual1 extends PushBotTelemetry
         // The setPosition methods write the motor power values to the Servo
         // class, but the positions aren't applied until this method ends.
         //
-        if (gamepad1.x)
-        {
-            m_hand_position (a_hand_position () + 0.05);
+        if (gamepad2.x) {
+            m_hand_position(a_hand_position() + 0.05);
         }
-        else if (gamepad1.b)
+        else if (gamepad2.b)
         {
             m_hand_position (a_hand_position () - 0.05);
         }
