@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorController;
  * Created by molsmith on 10/30/2015.
  */
 public class Paige extends PushBotAuto1 {
+    final int DRIVE_DISTANCE_6_INCHES = 2880;
     public void init() {
         super.init();
         //
@@ -183,11 +184,7 @@ public class Paige extends PushBotAuto1 {
 
                 break;
             case 1:
-                run_using_encoders();
-                set_drive_power(1.0, 1.0);
-                if (have_drive_encoders_reached(4066, 4066)) {
-                    reset_drive_encoders();
-                    set_drive_power(0.0, 0.0);
+                if (drive_using_encoders(1.0, 1.0, Math.round(1.41*DRIVE_DISTANCE_6_INCHES), Math.round(1.41*DRIVE_DISTANCE_6_INCHES))) {
                     v_state++;
                 }
                 break;
@@ -198,10 +195,7 @@ public class Paige extends PushBotAuto1 {
                 }
                 break;
             case 3:
-                set_drive_power(1.0, 0.5);
-                if (have_drive_encoders_reached(1440, 1440)) {
-                    reset_drive_encoders();
-                    set_drive_power(0.0, 0.0);
+                if (drive_using_encoders(1.0,0.5,(DRIVE_DISTANCE_6_INCHES/2),(DRIVE_DISTANCE_6_INCHES/2))) {
                     v_state++;
                 }
                 break;
@@ -211,10 +205,7 @@ public class Paige extends PushBotAuto1 {
                 }
                 break;
             case 5:
-                set_drive_power(1.0, 1.0);
-                if (have_drive_encoders_reached(4066, 4066)) {
-                    reset_drive_encoders();
-                    set_drive_power(0.0, 0.0);
+                if (drive_using_encoders(1.0,1.0,4066, 4066)) {
                     v_state++;
                 }
                 break;
@@ -224,6 +215,7 @@ public class Paige extends PushBotAuto1 {
                 }
                 break;
             case 7:
+                run_using_left_arm_encoder();
                 m_left_arm_power(0.25);
                 if (has_left_arm_encoder_reached(100)) {
                     reset_left_arm_encoder();
@@ -235,7 +227,7 @@ public class Paige extends PushBotAuto1 {
                 break;
         }//Switch
         update_telemetry (); // Update common telemetry
-        telemetry.addData ("18", "State: " + v_state);
+        telemetry.addData("18", "State: " + v_state);
         telemetry.addData("32", "L Encoder " +a_left_arm_encoder_count());
     }//loop
 
