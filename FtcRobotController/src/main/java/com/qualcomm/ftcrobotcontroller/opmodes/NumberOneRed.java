@@ -1,22 +1,19 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
-import com.qualcomm.robotcore.hardware.DcMotorController;
-import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
- * Created by molsmith on 11/5/2015.
+ * Created by molsmith on 11/9/2015.
  */
-public class NumberOneBlue extends PushBotAuto1 {
+public class NumberOneRed extends PushBotAuto1 {
     @Override
     public void init()
     {
 
         super.init();
         m_hand_position(0.0);
-
     }
 
     public void run_using_left_arm_encoder()
@@ -123,25 +120,31 @@ public class NumberOneBlue extends PushBotAuto1 {
     } // has_left_drive_encoder_reset
     public void start() {
         super.start();
-         int v_state=1;
+        v_state=0;
+        set_drive_power(0.0,0.0);
     }
 
     @Override
     public void loop() {
         super.loop();
         switch (v_state) {
-            case 1:
+            case 0:
                 reset_drive_encoders();
                 v_state++;
-
                 // reseting drive encoders
                 break;
-            case 2:
-                if(drive_using_encoders(-0.5f,0.6f, 200.7, 200.7)) {
+            case 1:
+                if(have_drive_encoders_reset()){
                     v_state++;
                 }
-                // turn left
                 break;
+            case 2:
+                if(drive_using_encoders(-0.5f,0.5f, 22.2, 22.2)) {
+                    v_state++;
+                }
+                    // turn left
+
+                    break;
             case 3:
                 if (have_drive_encoders_reset()) {
                     // reset drive encoders
@@ -149,6 +152,17 @@ public class NumberOneBlue extends PushBotAuto1 {
                 }
                 break;
             case 4:
+                if(drive_using_encoders(0.5f,0.5f,55.5, 55.5)) {
+                    v_state++;
+                    // drive forward
+                }
+                break;
+            case 5:
+                if(have_drive_encoders_reset()) {
+                    v_state++;
+                }
+                break;
+            case 6:
                 // raise arm
                 run_using_left_arm_encoder();
                 m_left_arm_power(0.6);
@@ -157,43 +171,44 @@ public class NumberOneBlue extends PushBotAuto1 {
                     v_state++;
                 }
                     break;
-            case 5:
+            case 7:
                 if (has_left_arm_encoder_reset()) {
                     // reset arm encoder
                     v_state++;
                 }
+
                 break;
-            case 6:
+            case 8:
                 if(drive_using_encoders(0.4f, 0.4, 2371.8, 2371.8)) {
                     //Push the button
                     v_state++;
                 }
                 break;
-            case 7:
+            case 9:
                 if (have_drive_encoders_reset()) {
                     v_state++;
                 }
                 //reseting the encoders
                 break;
-            case 8:
+            case 10:
                 if(drive_using_encoders(-.5f, -.5f, 2371.8, 2371.8)) {
                     //back up
                     v_state++;
                 }
-                    break;
-            case 9:
+                break;
+            case 11:
                 if (have_drive_encoders_reset()) {
                     // reset drive encoders
                     v_state++;
                 }
-                    break;
+                break;
         }
         update_telemetry(); // Update common telemetry
         telemetry.addData("18", "State: " + v_state);
         telemetry.addData("32", "L Encoder " +a_left_arm_encoder_count());
     }
 
-    private int v_state = 1;
+    private int v_state = 0;
     private DcMotor v_motor_left_arm;
     private Servo v_servo_right_hand;
     private Servo v_servo_left_hand;

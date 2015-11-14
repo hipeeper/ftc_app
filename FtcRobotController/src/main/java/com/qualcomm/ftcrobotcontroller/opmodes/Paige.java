@@ -232,7 +232,6 @@ public class Paige extends PushBotAuto1 {
     }//loop
 
     private int v_state = 0;
-
     private DcMotor v_motor_left_arm;
 
 }//Class

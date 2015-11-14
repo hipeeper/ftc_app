@@ -1,15 +1,15 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
-import com.qualcomm.robotcore.hardware.DcMotorController;
-import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
- * Created by molsmith on 11/5/2015.
+ * Created by molsmith on 11/12/2015.
  */
-public class NumberOneBlue extends PushBotAuto1 {
+public class BlueButterflyTwo extends PushBotAuto1
+
+ {
     @Override
     public void init()
     {
@@ -123,7 +123,7 @@ public class NumberOneBlue extends PushBotAuto1 {
     } // has_left_drive_encoder_reset
     public void start() {
         super.start();
-         int v_state=1;
+
     }
 
     @Override
@@ -133,15 +133,14 @@ public class NumberOneBlue extends PushBotAuto1 {
             case 1:
                 reset_drive_encoders();
                 v_state++;
-
                 // reseting drive encoders
                 break;
             case 2:
-                if(drive_using_encoders(-0.5f,0.6f, 200.7, 200.7)) {
+                if(drive_using_encoders(-0.5f,0.5f, 200.7, 200.7)) {
                     v_state++;
                 }
-                // turn left
-                break;
+                    // turn left
+                    break;
             case 3:
                 if (have_drive_encoders_reset()) {
                     // reset drive encoders
@@ -180,13 +179,13 @@ public class NumberOneBlue extends PushBotAuto1 {
                     //back up
                     v_state++;
                 }
-                    break;
+                break;
             case 9:
                 if (have_drive_encoders_reset()) {
                     // reset drive encoders
                     v_state++;
                 }
-                    break;
+                break;
         }
         update_telemetry(); // Update common telemetry
         telemetry.addData("18", "State: " + v_state);
