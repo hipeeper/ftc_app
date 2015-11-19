@@ -4,6 +4,12 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 //
 // PushBotManual
 //
+
+import com.qualcomm.ftccommon.DbgLog;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorController;
+import com.qualcomm.robotcore.util.Range;
+
 /**
  * Provide a basic manual operational mode that uses the left and right
  * drive motors, left arm motor, servo motors and gamepad input from only one
@@ -15,6 +21,8 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 public class PushBotManual1 extends PushBotTelemetry
 
 {
+    private DcMotor v_motor_left_arm;
+
     //--------------------------------------------------------------------------
     //
     // PushBotManual1
@@ -41,6 +49,21 @@ public class PushBotManual1 extends PushBotTelemetry
 public void init ()
 {
     super.init ();
+    //
+    // Connect the arm motor.
+    //
+    try
+    {
+        v_motor_left_arm = hardwareMap.dcMotor.get ("left_arm");
+    }
+    catch (Exception p_exeception)
+    {
+        m_warning_message ("left_arm");
+        DbgLog.msg(p_exeception.getLocalizedMessage());
+
+        v_motor_left_arm = null;
+    }
+
     m_hand_position(0.0);
 
 }
@@ -94,9 +117,10 @@ public void init ()
         // front of the robot to the back (i.e. up).  The left trigger makes the
         // arm move from the back to the front (i.e. down).
         //
+        run_using_left_arm_encoder();
         float l_left_arm_power
-            = (float)scale_motor_power (gamepad2.right_trigger)
-            - (float)scale_motor_power (gamepad2.left_trigger);
+            = (float)scale_arm_power (gamepad2.right_trigger)
+            - (float)scale_arm_power (gamepad2.left_trigger);
         m_left_arm_power (l_left_arm_power);
 
         //----------------------------------------------------------------------
@@ -125,12 +149,90 @@ public void init ()
         // Send telemetry data to the driver station.
         //
         update_telemetry (); // Update common telemetry
-        update_gamepad_telemetry ();
+        update_gamepad_telemetry();
         telemetry.addData
-            ( "12"
-            , "Left Arm1: " + l_left_arm_power
-            );
+                ("12"
+                        , "Left Arm1: " + l_left_arm_power
+                );
+        telemetry.addData("32", "L Encoder " +a_left_arm_encoder_count());
 
     } // loop
 
+    //--------------------------------------------------------------------------
+    //
+    // scale_motor_power
+    //
+    /**
+     * Scale the joystick input using a nonlinear algorithm.
+     */
+    float scale_arm_power (float p_power)
+    {
+        //
+        // Assume no scaling.
+        //
+        float l_scale = 0.0f;
+
+        //
+        // Ensure the values are legal.
+        //
+        float l_power = Range.clip(p_power, -1, 1);
+
+
+        float[] l_array =
+                { 0.00f, 0.025f, 0.045f, 0.05f, 0.06f
+                        , 0.08f, 0.09f, 0.12f, 0.15f, 0.16f
+                        , 0.18f, 0.40f, 0.60f, 0.72f, 0.85f
+                        , 1.00f, 1.00f
+                };
+
+        //
+        // Get the corresponding index for the specified argument/parameter.
+        //
+        int l_index = (int)(l_power * 16.0);
+        if (l_index < 0)
+        {
+            l_index = -l_index;
+        }
+        else if (l_index > 16)
+        {
+            l_index = 16;
+        }
+
+        if (l_power < 0)
+        {
+            l_scale = -l_array[l_index];
+        }
+        else
+        {
+            l_scale = l_array[l_index];
+        }
+
+        return l_scale;
+
+    } // scale_motor_power
+
+
+    /**
+     * Indicate whether the left drive motor's encoder has reached a value.
+     */
+    int a_left_arm_encoder_count ()
+    {
+        int l_return = 0;
+
+        if (v_motor_left_arm!= null)
+        {
+            l_return = v_motor_left_arm.getCurrentPosition ();
+        }
+
+        return l_return;
+
+    } // a_left_encoder_count
+    public void run_using_left_arm_encoder()
+    {
+        if (v_motor_left_arm != null) {
+            v_motor_left_arm.setChannelMode
+                    (DcMotorController.RunMode.RUN_USING_ENCODERS
+                    );
+        }
+    }
 } // PushBotManual1

@@ -15,6 +15,22 @@ public class NumberOneBlue extends PushBotAuto1 {
     {
 
         super.init();
+        //
+        // Connect the arm motor.
+        //
+        try
+        {
+            v_motor_left_arm = hardwareMap.dcMotor.get ("left_arm");
+        }
+        catch (Exception p_exeception)
+        {
+            m_warning_message ("left_arm");
+            DbgLog.msg(p_exeception.getLocalizedMessage());
+
+            v_motor_left_arm = null;
+        }
+
+
         m_hand_position(0.0);
 
     }

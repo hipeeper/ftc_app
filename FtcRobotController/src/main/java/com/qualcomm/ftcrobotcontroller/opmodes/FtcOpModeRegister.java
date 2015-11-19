@@ -67,6 +67,7 @@ public class FtcOpModeRegister implements OpModeRegister {
     manager.register ("NumberOneBlue",NumberOneBlue.class);
     manager.register ("NumberOneRed", NumberOneRed.class);
     manager.register ("BlueButterflyTwo", BlueButterflyTwo.class);
+    manager.register ("RedDragonFlyTwo", RedDrangonFlyTwo.class);
     /*
      * Uncomment any of the following lines if you want to register an op mode.
      */

@@ -1,5 +1,6 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -13,6 +14,20 @@ public class NumberOneRed extends PushBotAuto1 {
     {
 
         super.init();
+        //
+        // Connect the arm motor.
+        //
+        try
+        {
+            v_motor_left_arm = hardwareMap.dcMotor.get ("left_arm");
+        }
+        catch (Exception p_exeception)
+        {
+            m_warning_message ("left_arm");
+            DbgLog.msg(p_exeception.getLocalizedMessage());
+
+            v_motor_left_arm = null;
+        }
         m_hand_position(0.0);
     }
 
@@ -126,20 +141,21 @@ public class NumberOneRed extends PushBotAuto1 {
 
     @Override
     public void loop() {
-        super.loop();
         switch (v_state) {
             case 0:
+                set_drive_power(0.0,0.0);
                 reset_drive_encoders();
+                reset_left_arm_encoder();
                 v_state++;
                 // reseting drive encoders
                 break;
             case 1:
-                if(have_drive_encoders_reset()){
+                if(have_drive_encoders_reset() && has_left_arm_encoder_reset()){
                     v_state++;
                 }
                 break;
             case 2:
-                if(drive_using_encoders(-0.5f,0.5f, 22.2, 22.2)) {
+                if(drive_using_encoders(-0.5f,0.5f, 0.0, 500.0)) {
                     v_state++;
                 }
                     // turn left
@@ -152,7 +168,7 @@ public class NumberOneRed extends PushBotAuto1 {
                 }
                 break;
             case 4:
-                if(drive_using_encoders(0.5f,0.5f,55.5, 55.5)) {
+                if(drive_using_encoders(0.3f,0.9f,0.0, 12488.0)) {
                     v_state++;
                     // drive forward
                 }
@@ -165,8 +181,8 @@ public class NumberOneRed extends PushBotAuto1 {
             case 6:
                 // raise arm
                 run_using_left_arm_encoder();
-                m_left_arm_power(0.6);
-                if(has_left_arm_encoder_reached(900)) {
+                m_left_arm_power(-0.3);
+                if(has_left_arm_encoder_reached(2250-1064)) {
                     reset_left_arm_encoder();
                     v_state++;
                 }
@@ -179,7 +195,7 @@ public class NumberOneRed extends PushBotAuto1 {
 
                 break;
             case 8:
-                if(drive_using_encoders(0.4f, 0.4, 2371.8, 2371.8)) {
+                if(drive_using_encoders(0.4f, 0.4f, 0.0, 2371.8)) {
                     //Push the button
                     v_state++;
                 }
@@ -191,7 +207,7 @@ public class NumberOneRed extends PushBotAuto1 {
                 //reseting the encoders
                 break;
             case 10:
-                if(drive_using_encoders(-.5f, -.5f, 2371.8, 2371.8)) {
+                if(drive_using_encoders(-.5f, -.5f, 0.0, 2371.8)) {
                     //back up
                     v_state++;
                 }
