@@ -155,7 +155,7 @@ public class NumberOneRed extends PushBotAuto1 {
                 }
                 break;
             case 2:
-                if(drive_using_encoders(-0.5f,0.5f, 0.0, 500.0)) {
+                if(drive_using_encoders(-0.2f,0.3f, 30.7, 30.7)) {
                     v_state++;
                 }
                     // turn left
@@ -168,7 +168,7 @@ public class NumberOneRed extends PushBotAuto1 {
                 }
                 break;
             case 4:
-                if(drive_using_encoders(0.3f,0.9f,0.0, 12488.0)) {
+                if(drive_using_encoders(0.3f,0.9f,0.0, 6244.0)) {
                     v_state++;
                     // drive forward
                 }
@@ -181,7 +181,7 @@ public class NumberOneRed extends PushBotAuto1 {
             case 6:
                 // raise arm
                 run_using_left_arm_encoder();
-                m_left_arm_power(-0.3);
+                m_left_arm_power(0.3);
                 if(has_left_arm_encoder_reached(2250-1064)) {
                     reset_left_arm_encoder();
                     v_state++;
@@ -195,7 +195,7 @@ public class NumberOneRed extends PushBotAuto1 {
 
                 break;
             case 8:
-                if(drive_using_encoders(0.4f, 0.4f, 0.0, 2371.8)) {
+                if(drive_using_encoders(0.1f, 0.9f, 0.0, 1500.8)) {
                     //Push the button
                     v_state++;
                 }

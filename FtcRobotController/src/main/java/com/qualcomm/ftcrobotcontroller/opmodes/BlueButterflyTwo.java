@@ -128,7 +128,6 @@ public class BlueButterflyTwo extends PushBotAuto1
 
     @Override
     public void loop() {
-        super.loop();
         switch (v_state) {
             case 1:
                 reset_drive_encoders();

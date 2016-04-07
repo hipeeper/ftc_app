@@ -144,7 +144,6 @@ public class NumberOneBlue extends PushBotAuto1 {
 
     @Override
     public void loop() {
-        super.loop();
         switch (v_state) {
             case 1:
                 reset_drive_encoders();
@@ -153,7 +152,7 @@ public class NumberOneBlue extends PushBotAuto1 {
                 // reseting drive encoders
                 break;
             case 2:
-                if(drive_using_encoders(-0.5f,0.6f, 200.7, 200.7)) {
+                if(drive_using_encoders(0.2f,-0.3f, 30.7, 30.7)) {
                     v_state++;
                 }
                 // turn left
@@ -165,39 +164,50 @@ public class NumberOneBlue extends PushBotAuto1 {
                 }
                 break;
             case 4:
+                if(drive_using_encoders(0.3f,0.9f,0.0, 6244.0)) {
+                    v_state++;
+                    // drive forward
+                }
+                break;
+            case 5:
+                if(have_drive_encoders_reset()) {
+                    v_state++;
+                }
+                break;
+            case 6:
                 // raise arm
                 run_using_left_arm_encoder();
                 m_left_arm_power(0.6);
-                if(has_left_arm_encoder_reached(900)) {
+                if(has_left_arm_encoder_reached(2250-1064)) {
                     reset_left_arm_encoder();
                     v_state++;
                 }
                     break;
-            case 5:
+            case 7:
                 if (has_left_arm_encoder_reset()) {
                     // reset arm encoder
                     v_state++;
                 }
                 break;
-            case 6:
-                if(drive_using_encoders(0.4f, 0.4, 2371.8, 2371.8)) {
+            case 8:
+                if(drive_using_encoders(0.4f, 0.4, 0.0, 1500.8)) {
                     //Push the button
                     v_state++;
                 }
                 break;
-            case 7:
+            case 9:
                 if (have_drive_encoders_reset()) {
                     v_state++;
                 }
                 //reseting the encoders
                 break;
-            case 8:
+            case 10:
                 if(drive_using_encoders(-.5f, -.5f, 2371.8, 2371.8)) {
                     //back up
                     v_state++;
                 }
                     break;
-            case 9:
+            case 11:
                 if (have_drive_encoders_reset()) {
                     // reset drive encoders
                     v_state++;
