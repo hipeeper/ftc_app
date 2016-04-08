@@ -2,16 +2,24 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
+import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
  * Created by molsmith on 11/19/2015.
  */
 public class RedDrangonFlyTwo extends PushBotAuto1{
+    GyroSensor sensorGyro;
+        int heading = 0;
         public void init()
         {
 
             super.init();
+            // get a reference to our GyroSensor object.
+            sensorGyro = hardwareMap.gyroSensor.get("gyro");
+
+            // calibrate the gyro.
+            sensorGyro.calibrate();
             m_hand_position(0.0);
 
         }
@@ -34,7 +42,7 @@ public class RedDrangonFlyTwo extends PushBotAuto1{
             //
             boolean l_return = false;
 
-            if (v_motor_left_arm != null) {
+            if (v_motor_left_arm != null) {//
                 //
                 // Has the encoder reached the specified values?
                 //
@@ -126,6 +134,7 @@ public class RedDrangonFlyTwo extends PushBotAuto1{
         @Override
         public void loop() {
             super.loop();
+            heading = sensorGyro.getHeading();
             switch (v_state) {
                 case 1:
                     reset_drive_encoders();
@@ -196,6 +205,7 @@ public class RedDrangonFlyTwo extends PushBotAuto1{
             update_telemetry(); // Update common telemetry
             telemetry.addData("18", "State: " + v_state);
             telemetry.addData("32", "L Encoder " +a_left_arm_encoder_count());
+            telemetry.addData("4. h", String.format("%03d", heading));
         }
 
         private int v_state = 1;

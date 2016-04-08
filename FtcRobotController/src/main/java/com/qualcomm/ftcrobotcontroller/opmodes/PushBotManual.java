@@ -4,6 +4,9 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 //
 // PushBotManual
 //
+
+import com.qualcomm.robotcore.hardware.GyroSensor;
+
 /**
  * Provide a basic manual operational mode that uses the left and right
  * drive motors, left arm motor, servo motors and gamepad input from two
@@ -14,7 +17,20 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
  */
 public class PushBotManual extends PushBotTelemetry
 
-{
+{GyroSensor sensorGyro;
+    int heading = 0;
+    public void init()
+    {
+
+        super.init();
+        // get a reference to our GyroSensor object.
+        sensorGyro = hardwareMap.gyroSensor.get("gyro");
+
+        // calibrate the gyro.
+        sensorGyro.calibrate();
+        m_hand_position(0.0);
+
+    }
     //--------------------------------------------------------------------------
     //
     // PushBotManual
@@ -50,9 +66,8 @@ public class PushBotManual extends PushBotTelemetry
      *
      * The system calls this member repeatedly while the OpMode is running.
      */
-    @Override public void loop ()
-
-    {
+    @Override public void loop (){
+    heading = sensorGyro.getHeading();
         //----------------------------------------------------------------------
         //
         // DC Motors
@@ -112,8 +127,8 @@ public class PushBotManual extends PushBotTelemetry
         // Send telemetry data to the driver station.
         //
         update_telemetry (); // Update common telemetry
-        update_gamepad_telemetry ();
-
+        update_gamepad_telemetry();
+        telemetry.addData("5. h", String.format("%03d", heading));
     } // loop
 
 } // PushBotManual
