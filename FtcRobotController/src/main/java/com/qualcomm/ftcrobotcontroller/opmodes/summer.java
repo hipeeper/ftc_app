@@ -1,23 +1,12 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
-
 import com.qualcomm.robotcore.hardware.GyroSensor;
-
-
-//------------------------------------------------------------------------------
-//
-// PushBotAuto1
-//
 /**
- * Provide a basic autonomous operational mode that uses the left and right
- * drive motors and associated encoders implemented using a state machine for
- * the Push Bot.
- *
- * @author SSI Robotics
- * @version 2015-08-01-06-01
+ * Created by Arimae on 4/8/2016.
  */
-public class PushBotAuto1 extends PushBotTelemetry
+public class summer extends PushBotAuto1
 
-        {
+{
+        final int CLICKS_PER_INCH = 8800/36;
         GyroSensor sensorGyro;
         int heading;
         int start_heading;
@@ -31,7 +20,7 @@ public class PushBotAuto1 extends PushBotTelemetry
  *
  * The system calls this member when the class is instantiated.
  */
-public PushBotAuto1 ()
+public summer ()
 
         {
         //
@@ -147,7 +136,7 @@ public void init() {
         // If they haven't, then the op-mode remains in this state (i.e this
         // block will be executed the next time this method is called).
         //
-        if (have_drive_encoders_reached (2880, 2880))
+        if (have_drive_encoders_reached (36*CLICKS_PER_INCH, 0))
         {
         //
         // Reset the encoders to ensure they are at a known good value.
@@ -179,9 +168,9 @@ public void init() {
         // Turn left until the encoders exceed the specified values.
         //
         case 3:
-        run_using_encoders ();
-        set_drive_power (-1.0f, 1.0f);
-        if (have_drive_encoders_reached (2880, 2880))
+        run_using_encoders();
+        set_drive_power(-1.0f, 1.0f);
+        if (turned_from_to_heading(0, 90, true))
         {
         reset_drive_encoders ();
         set_drive_power (0.0f, 0.0f);
@@ -202,8 +191,8 @@ public void init() {
         //
         case 5:
         run_using_encoders ();
-        set_drive_power (1.0f, -1.0f);
-        if (have_drive_encoders_reached (2880, 2880))
+        set_drive_power (1.0f, 1.0f);
+        if (have_drive_encoders_reached (134*CLICKS_PER_INCH, 0))
         {
         reset_drive_encoders ();
         set_drive_power (0.0f, 0.0f);
@@ -219,6 +208,17 @@ public void init() {
         v_state++;
         }
         break;
+
+        case 7:
+        run_using_encoders();
+        set_drive_power (1.0f, -1.0f);
+        if (turned_from_to_heading(90, 0, false))
+        {
+        reset_drive_encoders ();
+        set_drive_power (0.0f, 0.0f);
+         v_state++;
+          }
+          break;
 //
 // Perform no action - stay in this case until the OpMode is stopped.
 // This method will still be called regardless of the state machine.
@@ -383,3 +383,4 @@ public int clip_at_360(int heading) {
 private int v_state = 0;
 
         } // PushBotAuto1
+
