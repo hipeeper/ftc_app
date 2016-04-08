@@ -1,5 +1,6 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 
 //------------------------------------------------------------------------------
@@ -19,8 +20,14 @@ public class PushBotManual extends PushBotTelemetry
 {
 
     GyroSensor sensorGyro;
+    ColorSensor sensorColorSensor;
+    int blue;
+    int green;
+    int red;
+
     int heading;
     int start_heading;
+
 
     //--------------------------------------------------------------------------
     //
@@ -58,10 +65,22 @@ public class PushBotManual extends PushBotTelemetry
 
          sensorGyro = null;
         }
+        try {
+            sensorColorSensor = hardwareMap.colorSensor.get("color_sensor");
+        }
+        catch (Exception p_exception) {
 
+            sensorColorSensor = null;
+        }
     }
 
-    //--------------------------------------------------------------------------
+    @Override
+    public void start() {
+        super.start();
+        sensorColorSensor.enableLed(true);
+
+    }
+//--------------------------------------------------------------------------
     //
     // loop
     //
@@ -101,6 +120,10 @@ public class PushBotManual extends PushBotTelemetry
             heading = sensorGyro.getHeading();
             telemetry.addData("16", "Gyro: " + heading);
         }
+
+        blue=sensorColorSensor.blue();
+        green=sensorColorSensor.green();
+        red=sensorColorSensor.red();
 
         //
         // Manage the drive wheel motors.
@@ -142,9 +165,11 @@ public class PushBotManual extends PushBotTelemetry
         //
         // Send telemetry data to the driver station.
         //
-        update_telemetry (); // Update common telemetry
-        update_gamepad_telemetry ();
-
+        update_telemetry(); // Update common telemetry
+        update_gamepad_telemetry();
+        telemetry.addData("48", "blue; " + blue);
+        telemetry.addData("49", "green; " + green);
+        telemetry.addData("47", "red;, "+ red);
     } // loop
 
 } // PushBotManual
