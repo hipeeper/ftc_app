@@ -77,7 +77,7 @@ public class PushBotManual extends PushBotTelemetry
     @Override
     public void start() {
         super.start();
-        sensorColorSensor.enableLed(true);
+       // sensorColorSensor.enableLed(true);
 
     }
 //--------------------------------------------------------------------------
@@ -167,7 +167,7 @@ public class PushBotManual extends PushBotTelemetry
         //
         update_telemetry(); // Update common telemetry
         update_gamepad_telemetry();
-        telemetry.addData("48", "blue; " + blue);
+        telemetry.addData("48", "blueB; " + blue);
         telemetry.addData("49", "green; " + green);
         telemetry.addData("47", "red;, "+ red);
     } // loop
