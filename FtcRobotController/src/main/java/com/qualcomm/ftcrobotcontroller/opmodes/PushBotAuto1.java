@@ -1,5 +1,8 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import com.qualcomm.robotcore.hardware.GyroSensor;
+
+
 //------------------------------------------------------------------------------
 //
 // PushBotAuto1
@@ -15,6 +18,10 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 public class PushBotAuto1 extends PushBotTelemetry
 
 {
+    GyroSensor sensorGyro;
+    int heading;
+    int start_heading;
+
     //--------------------------------------------------------------------------
     //
     // PushBotAuto1
@@ -38,6 +45,22 @@ public class PushBotAuto1 extends PushBotTelemetry
         // All via self-construction.
 
     } // PushBotAuto1
+
+    @Override
+    public void init() {
+        super.init();
+
+        try {
+            sensorGyro = hardwareMap.gyroSensor.get("gyro");
+            sensorGyro.calibrate();
+        }
+        catch (Exception p_exception) {
+
+            sensorGyro = null;
+        }
+
+    }
+
 
     //--------------------------------------------------------------------------
     //
@@ -77,6 +100,9 @@ public class PushBotAuto1 extends PushBotTelemetry
     @Override public void loop ()
 
     {
+        if (!sensorGyro.isCalibrating()) {
+            heading = sensorGyro.getHeading();
+        }
         //----------------------------------------------------------------------
         //
         // State: Initialize (i.e. state_0).
@@ -95,8 +121,9 @@ public class PushBotAuto1 extends PushBotTelemetry
                 //
                 // Transition to the next state when this method is called again.
                 //
-                v_state++;
-
+                if (!sensorGyro.isCalibrating()) {
+                    v_state++;
+                }
                 break;
             //
             // Drive forward until the encoders exceed the specified values.
@@ -209,7 +236,14 @@ public class PushBotAuto1 extends PushBotTelemetry
         //
         update_telemetry (); // Update common telemetry
         telemetry.addData ("18", "State: " + v_state);
-
+        // don't start until the gyro is calibrated
+        if (sensorGyro.isCalibrating()) {
+            telemetry.addData("16", "Gyro calibratiing");
+        }
+        else {
+            heading = sensorGyro.getHeading();
+            telemetry.addData("16", "Gyro: " + heading);
+        }
     } // loop
 
     //--------------------------------------------------------------------------

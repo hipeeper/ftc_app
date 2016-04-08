@@ -1,5 +1,7 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import com.qualcomm.robotcore.hardware.GyroSensor;
+
 //------------------------------------------------------------------------------
 //
 // PushBotManual
@@ -15,6 +17,11 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 public class PushBotManual extends PushBotTelemetry
 
 {
+
+    GyroSensor sensorGyro;
+    int heading;
+    int start_heading;
+
     //--------------------------------------------------------------------------
     //
     // PushBotManual
@@ -38,6 +45,21 @@ public class PushBotManual extends PushBotTelemetry
         // All via self-construction.
 
     } // PushBotManual
+
+    @Override
+    public void init() {
+        super.init();
+
+        try {
+            sensorGyro = hardwareMap.gyroSensor.get("gyro");
+            sensorGyro.calibrate();
+        }
+        catch (Exception p_exception) {
+
+         sensorGyro = null;
+        }
+
+    }
 
     //--------------------------------------------------------------------------
     //
@@ -70,6 +92,15 @@ public class PushBotManual extends PushBotTelemetry
         // The setPower methods write the motor power values to the DcMotor
         // class, but the power levels aren't applied until this method ends.
         //
+
+        // don't start until the gyro is calibrated
+        if (sensorGyro.isCalibrating()) {
+            telemetry.addData("16", "Gyro calibratiing");
+        }
+        else {
+            heading = sensorGyro.getHeading();
+            telemetry.addData("16", "Gyro: " + heading);
+        }
 
         //
         // Manage the drive wheel motors.
