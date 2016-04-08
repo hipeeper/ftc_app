@@ -246,6 +246,129 @@ public class PushBotAuto1 extends PushBotTelemetry
         }
     } // loop
 
+    public int magnitude_turned_degrees(int start_heading) {
+        if (!a_gyro_ready()) {
+            return 0;   // don't know amount turned
+        }
+        final int current_heading = a_current_heading();
+
+        final int result = Math.abs(signed_turn_in_degrees(start_heading));
+        return result;
+    }
+
+    /**
+     * You can save the initial heading using start_heading = a_current_heading();
+     *
+     * Use this function if you want to check if you are turning clockwise or counter-clockwise.
+     * Otherwise, use magnitude_turned_degrees if you are simply trying to turn a certain angle
+     * and are confident which way you are turning.
+     *
+     * @param start_heading
+     * @return for up to 179 degrees of turn, reports positive (clockwise) or negative (counter-clockwise) turn
+     */
+    public int signed_turn_in_degrees(int start_heading) {
+        if (!a_gyro_ready()) {
+            return 0;   // don't know amount turned
+        }
+        final int current_heading = a_current_heading();
+
+        final int clockwise_no_wrap = current_heading - start_heading;
+        if (clockwise_no_wrap >= 0 && clockwise_no_wrap <= 180) {
+            return clockwise_no_wrap;
+        }
+        final int clockwise_with_wrap = (current_heading+360)-start_heading;
+        if (clockwise_with_wrap <= 180) {
+            return clockwise_with_wrap;
+        }
+        final int counterclockwise_no_wrap = current_heading - start_heading;
+        if (counterclockwise_no_wrap <= 0 &&
+                counterclockwise_no_wrap >= -180) {
+            return counterclockwise_no_wrap;
+        }
+        final int counterclockwise_with_wrap = (current_heading-360) - start_heading;
+        return counterclockwise_with_wrap;
+    }
+
+    // returns true if gyro reports a turn AT LEAST AS FAR as end_heading
+    // from start_heading in the given direction
+    public boolean turned_from_to_heading(int start_heading, int end_heading, boolean turning_clockwise) {
+        final int MAX_TURN = 180;
+        final int clip_start_heading = clip_at_360(start_heading);
+        final int clip_end_heading = clip_at_360(end_heading);
+
+        if (!a_gyro_ready()) {
+            return false;   // don't know if reached heading
+        }
+        final int current_heading = a_current_heading();
+
+        if (turning_clockwise) {
+            if (clip_end_heading > clip_start_heading) {
+                return current_heading >= clip_end_heading;
+            }
+            else {
+                // turn must wrap past zero and then reach end_heading (but not continue on to a 360!)
+                return current_heading >= clip_end_heading &&
+                        current_heading <= (clip_start_heading+clip_end_heading)/2;
+            }
+        }
+        else {  // counter-clockwise
+            if (clip_end_heading < clip_start_heading) {
+                return current_heading <= clip_end_heading;
+            }
+            else {
+                // turn must wrap past zero and then reach end_heading (but not continue on to a 360!)
+                return current_heading <= clip_end_heading &&
+                        current_heading >= (clip_start_heading+clip_end_heading)/2;
+            }
+        }
+    }
+
+    /**
+     *
+     * @return true if gyro heading can be read
+     */
+    public boolean a_gyro_ready() {
+        boolean result = false;
+        if (sensorGyro != null && !sensorGyro.isCalibrating()) {
+            result = true;
+        }
+        return result;
+    }
+
+    /**
+     *
+     * @return zero if calibrating or no gyro, else current heading
+     */
+    public int a_current_heading() {
+        int result = 0;
+        if (sensorGyro == null) {
+            // no action
+        }
+        else if (sensorGyro.isCalibrating()) {
+            // no action
+        }
+        else {
+            result = sensorGyro.getHeading();
+        }
+        return result;
+    }
+
+    /**
+     *
+     * @param heading
+     * @return heading circled into [0,359]
+     */
+    public int clip_at_360(int heading) {
+        int result = heading;
+        while (result >= 360) {
+            result -= 360;
+        }
+        while (result <= 0) {
+            result += 360;
+        }
+        return result;
+    }
+
     //--------------------------------------------------------------------------
     //
     // v_state
